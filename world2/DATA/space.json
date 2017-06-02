@@ -1,0 +1,1 @@
+{"_id":{"$oid":"59317bdcc170c7446bd77217"},"who":"Elon Musk","company":"SpaceX","destination":"Moon","when":{"$date":"2017-06-20T13:30:00.000Z"},"reason":"To spring clean historic artefacts"}
