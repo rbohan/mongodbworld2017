@@ -29,7 +29,7 @@ mongo admin --quiet --eval "db.createUser( { user: 'viewer', pwd: 'viewer', role
 
 echo "Creating Databases ..."
 mongoimport -d flights -c airlines /vagrant/DATA/airlines.json --jsonArray
-mongoimport -d flights -c space /vagrant/DATA/space.json
+mongoimport -d flights -c TOPSECRET /vagrant/DATA/space.json
 
 echo "Decompressing and Installing BI Connector"
 mkdir /home/vagrant/connector_v2
@@ -47,18 +47,18 @@ echo "Creating DRDL files ..."
 mkdir /home/vagrant/schema
 
 mongodrdl -d flights -c airlines -o schema/airlines.drdl
-mongodrdl -d flights -c space -o schema/space.drdl
+mongodrdl -d flights -c TOPSECRET -o schema/topsecret.drdl
 
 sudo chown -R vagrant:vagrant /home/vagrant/schema
 
 echo "Setting up mongosqld scripts"
 
 echo "mongosqld --auth --schemaDirectory=/home/vagrant/schema \
- --addr=0.0.0.0:3307 -vv" > startmongosqld1.sh
+ --addr=0.0.0.0:3307" > startmongosqld1.sh
 echo "mongosqld --auth --schemaDirectory=/home/vagrant/schema \
  --sslPEMKeyFile=/vagrant/certs/mongosqld-server.pem \
  --sslCAFile=/vagrant/certs/ca.crt \
- --addr=0.0.0.0:3307 -vv" > startmongosqld2.sh
+ --addr=0.0.0.0:3307" > startmongosqld2.sh
 chmod +x startmongosqld1.sh startmongosqld2.sh
 
 echo "mysql --ssl --ssl-key=/vagrant/certs/mysql.key --ssl-cert=/vagrant/certs/mysql.crt --ssl-ca=/vagrant/certs/ca.crt --enable-cleartext-plugin --host=localhost --port=3307 --protocol=tcp -u root -p" > mysql.sh

@@ -23,8 +23,8 @@ sudo apt-get -qq update
 sudo apt-get -qq install -y --force-yes mongodb-org mysql-client zip
 
 echo "Creating Databases ..."
-mongoimport -d test -c people /vagrant/DATA/people.json
-mongoimport -d test -c cars /vagrant/DATA/cars.json
+mongoimport -d owners -c people /vagrant/DATA/people.json
+mongoimport -d owners -c cars /vagrant/DATA/cars.json
 
 echo "Decompressing and Installing BI Connector"
 mkdir /home/vagrant/connector_v2
@@ -41,13 +41,19 @@ echo "export PATH=/home/vagrant/connector_v2/mongodb-bi-linux-x86_64-ubuntu1404-
 echo "Creating DRDL files ..."
 mkdir /home/vagrant/schema
 
-mongodrdl -d test -c people -o schema/people.drdl
+echo "mongodrdl -d owners -c people -o schema/people.drdl" > genpeople.sh
+echo "mongodrdl -d owners -c cars -o schema/cars.drdl" > gencars.sh
+
+chmod +x genpeople.sh
+chmod +x gencars.sh
+
+./genpeople.sh
 
 sudo chown -R vagrant:vagrant /home/vagrant/schema
 
 echo "Setting up mongosqld script"
 
-echo "mongosqld --schemaDirectory=/home/vagrant/schema --addr=0.0.0.0:3307 -vv" > startmongosqld.sh
+echo "mongosqld --schemaDirectory=/home/vagrant/schema --addr=0.0.0.0:3307" > startmongosqld.sh
 chmod +x startmongosqld.sh
 
 echo "mysql --host=localhost --port=3307 --protocol=tcp" > mysql.sh
