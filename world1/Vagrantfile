@@ -53,7 +53,7 @@ sudo chown -R vagrant:vagrant /home/vagrant/schema
 
 echo "Setting up mongosqld script"
 
-echo "mongosqld --schemaDirectory=/home/vagrant/schema --addr=0.0.0.0:3307" > startmongosqld.sh
+echo "mongosqld --schemaDirectory=/home/vagrant/schema --addr=0.0.0.0:3307 -vv" > startmongosqld.sh
 chmod +x startmongosqld.sh
 
 echo "mysql --host=localhost --port=3307 --protocol=tcp" > mysql.sh
