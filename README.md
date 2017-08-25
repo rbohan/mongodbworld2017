@@ -40,10 +40,10 @@ The Vagrant setup scripts:
  * `startmongosqld2.sh` also auth enabled but will the full set of command line parameters (this is expected to succeed, assuming the certificates are in place and valid)
 
  Note: Starting the BI Connector with auth requires some certificate files, speficially PEM key file for the mongod server and (optionally) a certificate authority file.
- 
+
 ## Creating certificate files
 
-Detailed instructions for creating the certificate files is beyond the scope of this article. However, you can generate some self-signed certificates using the following script:
+Detailed instructions for creating the certificate files (required for the `worldvm2` demo) are beyond the scope of this article. However, you can generate some self-signed certificates using the following script:
 
 ```
 #! /bin/bash
@@ -54,7 +54,7 @@ export HOSTNAME=`hostname -f`
 openssl genrsa -out private.key 2048
 
 openssl req -x509 -nodes -new -key private.key -days 1000 \
--out ca.crt -subj "/C=US/ST=New York/L=NYC/O=mongodb/CN=myCA" 
+-out ca.crt -subj "/C=US/ST=New York/L=NYC/O=mongodb/CN=myCA"
 
 openssl req -new -nodes -newkey rsa:2048 \
 -keyout mongod.key -out mongod.csr \
@@ -98,11 +98,11 @@ openssl verify -CAfile ca.crt mongosqld-server.crt
 openssl verify -CAfile ca.crt mysql.crt
 ```
 
-The output files should be copied into a new `certs` subfolder, i.e., `world2\certs`
+The output files should be copied into a new `certs` subfolder, i.e., `.../world2/certs`
 
 ## Creating a Tableau Datasource Connection file
 
-To ensure Tableau connects to the BI Connector with SSL create a TDC file similar to the following (update the values for `SSLKEY`, `SSLCERT` and `SSLCA` using the full path to the respective file): 
+To ensure Tableau connects to the BI Connector with SSL create a TDC file similar to the following (update the values for `SSLKEY`, `SSLCERT` and `SSLCA` using the full path to the respective file):
 
 ```
 <?xml version='1.0' encoding='utf-8' ?>
@@ -150,4 +150,3 @@ Once the BI Connector script is running you should be able to connect to it from
 * If you connect with no (or invalid) user details you will get an error dialog
 * If you connect with the `root/root` user you can see the `flights` database, containing two tables: `airlines` and `TOPSECRET`
 * If you connect with the `viewer/viewer` user you can only see the `airlines` table in the `flights` database
-
