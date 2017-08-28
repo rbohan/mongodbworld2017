@@ -4,7 +4,9 @@
 
 This repo contains the vagrant files for the VMs used in the '[Jumpstart: BI Connector & Tableau](https://explore.mongodb.com/vidyard-all-players/mongodb-world-presentations-crystal-b-ronan-bohan-vaidy-krishnan-6-20-2017)' presentation from MongoDB World 2017, updated to use the *MongoDB BI Connector v2.2*.
 
-It contains two separate VMs:
+Note: You can find the instructions and setup files for a version using the *MongoDB BI Connector v2.1*, which was used in the original presentation, in [this branch](https://github.com/rbohan/mongodbworld2017/tree/bi-connector-2.1).
+
+The repo contains two separate VMs:
 
 * `worldvm1` sets up a MongoDB instance and a BI Connector instance with *no auth enabled*.
 * `worldvm2` sets up a MongoDB instance and a BI Connector instance *with auth enabled*.
