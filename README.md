@@ -94,7 +94,7 @@ Once the VM is running, ssh into the instance `vagrant ssh`
 To start the BI Connector:
 
 * launch the startup script `startmongosqld1.sh`. This should fail with an error message complaining about the lack of the `--sslPEMKeyFile` parameter.
-* launch the startup script `startmongosqld2.sh`. This is expected to succeed. You can verify the process has started with auth enabled by checking for the presence of the `--auth true` arguement in the console output.
+* launch the startup script `startmongosqld2.sh`. This is expected to succeed. You can verify the process has started with auth enabled by checking for the presence of the `--auth true` argument in the console output.
 
 Once the BI Connector script is running you should be able to connect to it from your BI tool of choice, e.g. Tableau, by connecting to Server `192.168.16.100` on port `3307`.
 
