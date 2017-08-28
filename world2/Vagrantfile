@@ -61,7 +61,7 @@ echo "mongosqld --auth --schemaDirectory=/home/vagrant/schema \
  --addr=0.0.0.0:3307 -vv" > startmongosqld2.sh
 chmod +x startmongosqld1.sh startmongosqld2.sh
 
-echo "mysql --ssl --ssl-key=/vagrant/certs/mysql.key --ssl-cert=/vagrant/certs/mysql.crt --ssl-ca=/vagrant/certs/ca.crt --enable-cleartext-plugin --host=localhost --port=3307 --protocol=tcp -u root -p" > mysql.sh
+echo "mysql --ssl --ssl-key=/vagrant/certs/mongo.key --ssl-cert=/vagrant/certs/mongo.crt --ssl-ca=/vagrant/certs/ca.crt --enable-cleartext-plugin --host=localhost --port=3307 --protocol=tcp -u root -p" > mysql.sh
 chmod +x mysql.sh
 
 echo "Restarting mongod (with auth)"

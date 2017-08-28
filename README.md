@@ -57,7 +57,7 @@ To ensure Tableau connects to the BI Connector with SSL create a TDC file simila
     <vendor name='mongodb' />
     <driver name='mongodb' />
     <customizations>
-      <customization name='odbc-connect-string-extras' value='SSLKEY={/.../world2/certs/mysql.key};SSLCERT={/.../world2/certs/mysql.crt};SSLCA={/.../world2/certs/ca.crt};ENABLE_CLEARTEXT_PLUGIN=1;SSL_ENFORCE=1' />
+      <customization name='odbc-connect-string-extras' value='SSLKEY={/.../world2/certs/mongo.key};SSLCERT={/.../world2/certs/mongo.crt};SSLCA={/.../world2/certs/ca.crt};ENABLE_CLEARTEXT_PLUGIN=1;SSL_ENFORCE=1' />
       </customizations>
 </connection-customization>
 ```

@@ -39,19 +39,19 @@ openssl x509 -CA ca.crt -CAkey private.key -CAserial ca.srl -req -days 1000 -in 
 cat mongosqld-server.key mongosqld-server.crt > mongosqld-server.pem
 
 openssl req -new -nodes \
--keyout mysql.key \
--out mysql.csr \
--subj "/C=US/ST=New York/L=NYC/O=mongodb/CN=mysql"
+-keyout mongo.key \
+-out mongo.csr \
+-subj "/C=US/ST=New York/L=NYC/O=mongodb/CN=mongo"
 
-openssl x509 -CA ca.crt -CAkey private.key -CAserial ca.srl -req -days 1000 -in mysql.csr -out mysql.crt
+openssl x509 -CA ca.crt -CAkey private.key -CAserial ca.srl -req -days 1000 -in mongo.csr -out mongo.crt
 
-openssl rsa -in mysql.key -out mysql.key
-cat mysql.key mysql.crt > mysql.pem
+openssl rsa -in mongo.key -out mongo.key
+cat mongo.key mongo.crt > mongo.pem
 
 openssl verify -CAfile ca.crt mongod.crt
 openssl verify -CAfile ca.crt mongosqld-client.crt
 openssl verify -CAfile ca.crt mongosqld-server.crt
-openssl verify -CAfile ca.crt mysql.crt
+openssl verify -CAfile ca.crt mongo.crt
 ```
 
 The output files should be copied into a new `certs` subfolder, i.e., `.../world2/certs`
