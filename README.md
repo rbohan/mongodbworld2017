@@ -69,6 +69,8 @@ This file should be saved with a `.tdc` extensions in the following folder (for 
 
 Tableau will need to be restarted if you create a new or modify an existing `.tdc` file.
 
+Additional information regarding how to install the BI Connector for use with Tableau can be found in the [online documentation](https://docs.mongodb.com/bi-connector/v2.1/tutorial/connecting/).
+
 ## Running the Demos
 
 ### `worldvm1`
