@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repo contains the vagrant files for the VMs used in the '[Jumpstart: BI Connector & Tableau](https://explore.mongodb.com/vidyard-all-players/mongodb-world-presentations-crystal-b-ronan-bohan-vaidy-krishnan-6-20-2017)' presentation from MongoDB World 2017, using the *MongoDB BI Connector v2.1*.
+This repo contains the vagrant files for the VMs used in the '[Jumpstart: BI Connector & Tableau](https://explore.mongodb.com/vidyard-all-players/mongodb-world-presentations-crystal-b-ronan-bohan-vaidy-krishnan-6-20-2017)' presentation from MongoDB World 2017, updated to use the *MongoDB BI Connector v2.2*.
 
 It contains two separate VMs:
 
@@ -19,7 +19,7 @@ Each VM is configured as follows:
 The Vagrant setup scripts will:
 
 * Download and install the latest MongoDB 3.4 community server (bound to `0.0.0.0`)
-* Download and install version 2.1.0 of the MongoDB BI Connector (listening on `0.0.0.0:3307`). Note: The BI Connector process is not started automatically but scripts are provided to do so.
+* Download and install version 2.2.0 of the MongoDB BI Connector (listening on `0.0.0.0:3307`). Note: The BI Connector process is not started automatically but scripts are provided to do so.
 
 ### `worldvm1` VM Info
 
@@ -35,30 +35,24 @@ The Vagrant setup scripts will:
 * Two users are created:
  * `root/root` with the `root` role
  * `viewer/viewer` with a custom `viewer` role (which can only see the airline data)
-* Creates two scripts to start the BI Connector:
- * `startmongosqld1.sh` which is auth enabled but does not contain certificate information (this is for demonstration purposes and is expected to fail)
- * `startmongosqld2.sh` also auth enabled but will the full set of command line parameters (this is expected to succeed, assuming the certificates are in place and valid, see below)
+* Creates a script to start the BI Connector `startmongosqld.sh`
 
- Note: Starting the BI Connector with auth requires some certificate files, speficially PEM key file for the mongod server and (for self-signed serts) a certificate authority file.
-
-## Creating certificate files
-
-Detailed instructions for creating certificate files (required for the `worldvm2` demo) are beyond the scope of this article. However, you can generate some self-signed certificates by following [these instructions](README-certs.md).
-
-Note: These certificates should not be used in a production environment!
+ Note: Version 2.2 of the BI Connector uses a MySQL authentication plugin (`mongosql_auth`) to allow clients to connect without the need for additional certificates, greatly simplifying the installation and configuration process when compared to the previous version of the BI Connector (v 2.1).
 
 ## Creating a Tableau Datasource Connection file
 
-To ensure Tableau connects to the BI Connector with SSL create a TDC file similar to the following (update `SSLKEY`, `SSLCERT` and `SSLCA` with the full path of the respective file):
+To ensure Tableau connects to the BI Connector with SSL create a TDC file containing the following:
 
 ```
 <?xml version='1.0' encoding='utf-8' ?>
 <connection-customization class='mongodb' version='7.7' enabled='true'>
-    <vendor name='mongodb' />
-    <driver name='mongodb' />
-    <customizations>
-      <customization name='odbc-connect-string-extras' value='SSLKEY={/.../world2/certs/mongo.key};SSLCERT={/.../world2/certs/mongo.crt};SSLCA={/.../world2/certs/ca.crt};ENABLE_CLEARTEXT_PLUGIN=1;SSL_ENFORCE=1' />
-      </customizations>
+  <vendor name='mongodb' />
+  <driver name='mongodb' />
+  <customizations>
+    <customization
+      name='odbc-connect-string-extras'
+      value='USE_MYCNF=1' />
+  </customizations>
 </connection-customization>
 ```
 
@@ -68,6 +62,8 @@ This file should be saved with a `.tdc` extensions in the following folder (for 
 * Windows: `Documents\My Tableau Repository\Datasources`
 
 Tableau will need to be restarted if you create a new or modify an existing `.tdc` file.
+
+Additional information regarding how to install the BI Connector for use with Tableau can be found in the [online documentation](https://docs.mongodb.com/bi-connector/master/connect/tableau/).
 
 ## Running the Demos
 
@@ -89,10 +85,9 @@ Switch to the `worldvm2` directory and run `vagrant up`
 
 Once the VM is running, ssh into the instance `vagrant ssh`
 
-To start the BI Connector:
+To start the BI Connector, launch the startup script `startmongosqld.sh`
 
-* launch the startup script `startmongosqld1.sh`. This should fail with an error message complaining about the lack of the `--sslPEMKeyFile` parameter.
-* launch the startup script `startmongosqld2.sh`. This is expected to succeed. You can verify the process has started with auth enabled by checking for the presence of the `--auth true` arguement in the console output.
+You can verify the process has started with auth enabled by checking for `security: {enabled: true}}` in the console output.
 
 Once the BI Connector script is running you should be able to connect to it from your BI tool of choice, e.g. Tableau, by connecting to Server `192.168.16.100` on port `3307`.
 

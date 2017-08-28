@@ -20,7 +20,7 @@ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A1
 echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
 
 sudo apt-get -qq update
-sudo apt-get -qq install -y --force-yes mongodb-org mysql-client zip
+sudo apt-get -qq install -y --force-yes mongodb-org mysql-client libmysqlclient-dev zip
 
 echo "Creating Users and Roles ..."
 mongo admin --quiet --eval "db.createRole({role:'viewerRole', privileges: [ {resource: { cluster:true }, actions:['listDatabases'] }, {resource: { db: '', collection: ''}, actions:['listCollections', 'listIndexes', 'top', 'inprog', 'serverStatus']}, {resource: { db: 'flights', collection: 'airlines'}, actions:['find','collStats','dbStats','indexStats','listDatabases','listCollections','listIndexes']} ], roles: [] })"
@@ -34,14 +34,23 @@ mongoimport -d flights -c TOPSECRET /vagrant/DATA/space.json
 echo "Decompressing and Installing BI Connector"
 mkdir /home/vagrant/connector_v2
 pushd /home/vagrant/connector_v2
-wget https://info-mongodb-com.s3.amazonaws.com/mongodb-bi/v2/mongodb-bi-linux-x86_64-ubuntu1404-v2.1.0.tgz -nv
-tar -xf mongodb-bi-linux-x86_64-ubuntu1404-v2.1.0.tgz
+wget https://info-mongodb-com.s3.amazonaws.com/mongodb-bi/v2/mongodb-bi-linux-x86_64-ubuntu1404-v2.2.0.tgz -nv
+tar -xf mongodb-bi-linux-x86_64-ubuntu1404-v2.2.0.tgz
+popd
+
+echo "Decompressing and Installing mongosql_auth plugin"
+mkdir /home/vagrant/mongosql_auth
+pushd /home/vagrant/mongosql_auth
+wget https://github.com/mongodb/mongosql-auth-c/releases/download/v1.0.0/mongosql-auth-linux-x86_64-ubuntu-1404-v1.0.0.tgz -nv
+tar -xf mongosql-auth-linux-x86_64-ubuntu-1404-v1.0.0.tgz
+sudo mkdir -p $(mysql_config --plugindir)
+sudo cp mongosql-auth-linux-x86_64-ubuntu-1404/lib/mongosql_auth.so $(mysql_config --plugindir)
 popd
 
 sudo chown -R vagrant:vagrant /home/vagrant/connector_v2
 
-export PATH=/home/vagrant/connector_v2/mongodb-bi-linux-x86_64-ubuntu1404-v2.1.0/bin:$PATH
-echo "export PATH=/home/vagrant/connector_v2/mongodb-bi-linux-x86_64-ubuntu1404-v2.1.0/bin:$PATH" >> .bashrc
+export PATH=/home/vagrant/connector_v2/mongodb-bi-x86_64-ubuntu1404-linux-v2.2.0/bin:$PATH
+echo "export PATH=/home/vagrant/connector_v2/mongodb-bi-x86_64-ubuntu1404-linux-v2.2.0/bin:$PATH" >> .bashrc
 
 echo "Creating DRDL files ..."
 mkdir /home/vagrant/schema
@@ -54,14 +63,10 @@ sudo chown -R vagrant:vagrant /home/vagrant/schema
 echo "Setting up mongosqld scripts"
 
 echo "mongosqld --auth --schemaDirectory=/home/vagrant/schema \
- --addr=0.0.0.0:3307 -vv" > startmongosqld1.sh
-echo "mongosqld --auth --schemaDirectory=/home/vagrant/schema \
- --sslPEMKeyFile=/vagrant/certs/mongosqld-server.pem \
- --sslCAFile=/vagrant/certs/ca.crt \
- --addr=0.0.0.0:3307 -vv" > startmongosqld2.sh
-chmod +x startmongosqld1.sh startmongosqld2.sh
+ --addr=0.0.0.0:3307 -vv" > startmongosqld.sh
+chmod +x startmongosqld.sh
 
-echo "mysql --ssl --ssl-key=/vagrant/certs/mongo.key --ssl-cert=/vagrant/certs/mongo.crt --ssl-ca=/vagrant/certs/ca.crt --enable-cleartext-plugin --host=localhost --port=3307 --protocol=tcp -u root -p" > mysql.sh
+echo "mysql --default-auth=mongosql_auth --host=localhost --port=3307 --protocol=tcp -u root -p" > mysql.sh
 chmod +x mysql.sh
 
 echo "Restarting mongod (with auth)"
